@@ -1,0 +1,14 @@
+start : "SELECT" whitespace selectstmtbasic whitespace "WHERE" whitespace whereclause ";"
+selectstmtbasic : "COUNT(*)"
+whereclause :  multi_table | single_table
+single_table : predicate
+multi_table: joins whitespace connective whitespace predicates | joins
+joins : join whitespace connective whitespace joins | join
+predicates :  predicate whitespace connective whitespace predicates | predicate
+predicate : column operator value
+operator : ">" | "<" | "=" 
+whitespace : " "
+connective : "AND"
+value :  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+join : "PART.P_PARTKEY=PARTSUPP.PS_PARTKEY" | "SUPPLIER.S_SUPPKEY=PARTSUPP.PS_SUPPKEY" | "SUPPLIER.S_NATIONKEY=CUSTOMER.C_NATIONKEY" | "SUPPLIER.S_NATIONKEY=NATION.N_NATIONKEY" | "PARTSUPP.PS_SUPPKEY=LINEITEM.L_SUPPKEY" | "CUSTOMER.C_CUSTKEY=ORDERS.O_CUSTKEY" | "NATION.N_REGIONKEY=REGION.R_REGIONKEY" | "LINEITEM.L_ORDERKEY=ORDERS.O_ORDERKEY"
+column : "PART.P_SIZE" | "PART.P_RETAILPRICE" | "SUPPLIER.S_ACCTBAL" | "PARTSUPP.PS_AVAILQTY" | "PARTSUPP.PS_SUPPLYCOST" | "CUSTOMER.C_ACCTBAL" | "ORDERS.O_TOTALPRICE" | "ORDERS.O_SHIPPRIORITY" | "LINEITEM.L_LINENUMBER" | "LINEITEM.L_QUANTITY" | "LINEITEM.L_EXTENDEDPRICE" | "LINEITEM.L_DISCOUNT" | "LINEITEM.L_TAX"

@@ -1,0 +1,12 @@
+<start> ::= "SELECT" <whitespace> <selectstmtbasic> <whitespace> "WHERE" <whitespace> <whereclause> ";"
+<selectstmtbasic> ::= "COUNT(*)"
+<whereclause> ::=  <multi_table> | <single_table>
+<single_table> ::= <predicate>
+<multi_table>::= <joins> <whitespace> <connective> <whitespace> <predicates> | <joins>
+<joins> ::= <join> <whitespace> <connective> <whitespace> <joins> | <join>
+<predicates> ::=  <predicate> <whitespace> <connective> <whitespace> <predicates> | <predicate>
+<predicate> ::= <column> <operator> <value>
+<operator> ::= ">" | "<" | "=" 
+<whitespace> ::= " "
+<connective> ::= "AND"
+<value> ::=  "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
