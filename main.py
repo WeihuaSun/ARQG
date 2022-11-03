@@ -1,5 +1,3 @@
-from lib2to3.pgen2 import grammar
-import re
 import constants
 import parse_utils
 import torch
@@ -66,23 +64,23 @@ def generator(action_getter: parse_utils.SimpleTreeActionGetter, n: int):
             prob = torch.log_softmax(torch.rand(num_of_rules), dim=-1)
             syntax_mask = action_masks[non_terminal_ids.index(symbol_id)]#语法检查
             unit_mask = torch.logical_and(syntax_mask,semantic_mask)
-            #try:
-            action_dist = Categorical(logits=prob.masked_fill(
-            unit_mask.bitwise_not().unsqueeze(0), float('-inf')))
-            #except:
-                #for i in action_list: 
-                    #print(check.action_list[i])
-            #finally:
-            action = int(action_dist.sample())
-            semantic_mask_ = check.check(action,action_list,symbol_stack)
-            if semantic_mask_ is not None:
-                semantic_mask = semantic_mask_
-            else:
-                continue
-            action_list.append(action)
-            for child_id in reversed(rules_dict[symbol_id][action - action_offsets[symbol_id]]):
-                if isinstance(symbol_names[child_id], parse_utils.NonTerminal):
-                    symbol_stack.append(child_id)
+            try:
+                action_dist = Categorical(logits=prob.masked_fill(
+                unit_mask.bitwise_not().unsqueeze(0), float('-inf')))
+            except:
+                for i in action_list: 
+                    print(check.action_list[i])
+            finally:
+                action = int(action_dist.sample())
+                semantic_mask_ = check.check(action,action_list,symbol_stack)
+                if semantic_mask_ is not None:
+                    semantic_mask = semantic_mask_
+                else:
+                    continue
+                action_list.append(action)
+                for child_id in reversed(rules_dict[symbol_id][action - action_offsets[symbol_id]]):
+                    if isinstance(symbol_names[child_id], parse_utils.NonTerminal):
+                        symbol_stack.append(child_id)
         try:
             sql = action_getter.construct_text_partial(action_list)
         except:

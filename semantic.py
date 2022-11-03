@@ -41,6 +41,7 @@ class Semantic:
         self.existing_table = set([])
         self.usecolumns = []
         self.firstPredicates = True
+        self.validjoin = 0
         
     def _action_list(self):
         actions = []
@@ -71,14 +72,27 @@ class Semantic:
         return self.longterm_mask
 
     def action_join(self,action,symbol_stack,action_seq):
+        first_action,last_action = self.get_range("join")
+        offset = action-first_action
         _, id, _, name = self.action_list[action]
-        self.longterm_mask[action] = 0
         vm =re.search(constants.reg_join,name[0])
         tableA,tableB = vm.group(1),vm.group(3)
         self.existing_join.append(action)
         self.existing_table.add(tableA)
         self.existing_table.add(tableB)
-        if len(self.existing_join)==len(self.rules_dict[id]):#已经没有连接条件可以选择了，整理action序列和语法分析栈
+        keys = list(constants.joinkey.keys())
+        self.longterm_mask[first_action:last_action] = 1
+        for action in self.existing_join:
+            self.longterm_mask[action] = 0
+        for i in range(len(keys)):
+            t1,t2 = keys[i]
+            if t1 not in  [tableA,tableB] and t2 not in [tableA,tableB]:
+                self.longterm_mask[first_action+i] = 0
+        flag = True
+        for item in self.longterm_mask[first_action:last_action]:
+            if item == True:
+                flag=False
+        if flag:#已经没有连接条件可以选择了，整理action序列和语法分析栈
             if len(symbol_stack)>0 and symbol_stack[-4]==self.symbol_names.index(parse_utils.NonTerminal('joins')):
                 symbol_stack.pop()
                 symbol_stack.pop()
